@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Организационная Конституция — генератор v2.0</title>
+<title>Организационная Конституция — генератор v2.1</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f2f4f3;color:#1c2422}
 .topbar{background:#0d3b2e;color:#fff;padding:12px 24px;display:flex;gap:12px;align-items:baseline}
@@ -33,10 +33,10 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 </style>
 </head>
 <body>
-<div class="topbar no-print">⚖ Организационная Конституция <span>генератор v2.0 · Модули 1–4 + Матрицы профессий + IOC</span></div>
+<div class="topbar no-print">⚖ Организационная Конституция <span>генератор v2.1 · Модули 1–4 + Матрицы профессий + IOC + ИИ-разбор</span></div>
 <section class="hero no-print">
 <h1>У вашей компании есть устав, миссия, оргструктура, регламенты и KPI.<br>Но есть ли между ними Конституция?</h1>
-<p>Ответьте на вопросы о реальной практике — система соберёт <b>полную Конституцию</b> (Преамбула, Части I–XI, функциональные конституции по Матрице профессий, приложения) и посчитает <b>Индекс управляемости (IOC)</b> с картой разрывов.</p>
+<p>Ответьте на вопросы о реальной практике — система соберёт <b>полную Конституцию</b> (Преамбула, Части I–XI, функциональные конституции по Матрице профессий, приложения), посчитает <b>Индекс управляемости (IOC)</b> с картой разрывов, а ИИ-консультант объяснит диагноз простым языком.</p>
 </section>
 
 <main class="quiz no-print">
@@ -171,10 +171,10 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 </div>
 <div id="resultHtml"></div>
 </section>
-<footer>Прототип v2.0 · результат не является юридическим документом</footer>
+<footer>Прототип v2.1 · результат не является юридическим документом</footer>
 
 <script>
-/* ========= КОНТАКТ АРХИТЕКТОРА (уже вшит) ========= */
+/* ========= КОНТАКТ АРХИТЕКТОРА (вшит) ========= */
 var CONTACT={tg:'@ShukhratIlyasov',name:'Шухрат Ильясов'};
 
 var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
@@ -368,7 +368,6 @@ if(dups)gaps.push(['🟡','М1.6: один ранг использован дв�
 if(radio('m2d')==='e')gaps.push(['🔴','Нет правила по умолчанию на вершине эскалации (М2)']);
 if(radio('m4o')==='b')gaps.push(['🟡','М4: солидарная ответственность размывает фокус — рекомендуется «один владелец»']);
 procs.forEach(function(p){if(!p.o)gaps.push(['🔴','Процесс «'+p.n+'» без владельца (нарушен принцип одного владельца)'])});
-/* --- quality-gate и кросс-проверки v2.0 --- */
 var en={};m3.fns.forEach(function(f){en[f]=1});
 if(txt('q1').split(/\s+/).length<6)gaps.push(['🟡','М1.1: предназначение слишком абстрактно — статья будет декларативной']);
 if(txt('q2').split(/\s+/).length<6)gaps.push(['🟡','М1.2: миссия не конкретизирована (кто и что теряет)']);
@@ -383,7 +382,7 @@ CROSS.forEach(function(c){if(en[c.af]&&!en[c.bf])gaps.push([(c.af==='SALES'&&(c.
 
 var B=[];
 B.push(['h1','КОНСТИТУЦИЯ ОРГАНИЗАЦИИ — '+name]);
-B.push(['p','Версия: '+ver+' · Дата: '+date+' · Статус: проект · Собрано генератором v2.0']);
+B.push(['p','Версия: '+ver+' · Дата: '+date+' · Статус: проект · Собрано генератором v2.1']);
 B.push(['h2','ПРЕАМБУЛА']);
 B.push(['p',q12==='b'?'Конституция обновляет и заменяет аналогичный документ.':q12==='c'?'Конституция создаётся в антикризисном режиме.':'Конституция создаётся впервые и является первым единым документом организации.']);
 B.push(['p','До принятия принципы '+(q8.length?('фиксировались: '+q8.join('; ').toLowerCase()+'.'):'не были формально зафиксированы.')+' Область применения: '+(q9.length?q9.join('; ').toLowerCase():'штатные сотрудники')+'.']);
@@ -506,6 +505,39 @@ if(navigator.clipboard){navigator.clipboard.writeText(lastMD).then(ok)}else{var 
 document.getElementById('downloadBtn').addEventListener('click',function(){var blob=new Blob([lastMD],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Konstitutsiya_v2.md';a.click();URL.revokeObjectURL(a.href)});
 document.getElementById('printBtn').addEventListener('click',function(){window.print()});
 loadDraft();
+</script>
+
+<script>
+/* ================= ИИ-РОУТЕР (Groq + OpenRouter, ключи вшиты) ================= */
+var AI_KEYS={gemini:'',groq:'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',openrouter:'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'};
+(function(){
+ if(document.getElementById('aiBtn'))return;
+ var act=document.querySelector('.actions');if(!act)return;
+ var b=document.createElement('button');b.className='btn small';b.id='aiBtn';b.textContent='🤖 ИИ-разбор отчёта';act.appendChild(b);
+ var out=document.createElement('div');out.id='aiOut';out.style.cssText='margin-top:14px;padding:14px;border:1px solid #e2e8e5;border-radius:10px;background:#f8faf9;white-space:pre-wrap;display:none;font-size:14px;line-height:1.55';
+ document.getElementById('resultSection').appendChild(out);
+ b.addEventListener('click',runAI);
+})();
+async function runAI(){
+ var out=document.getElementById('aiOut');out.style.display='block';out.textContent='ИИ читает отчёт…';
+ var p='Ты — консультант по управлению компанией. Ниже отчёт диагностики «Организационная Конституция» (IOC, разрывы, роли, процессы). Ответь на русском, просто и конкретно: 1) Общая картина — 2–3 предложения. 2) Три самых опасных разрыва и к каким потерям они приведут. 3) Три первых шага собственника. ОТЧЁТ:\n'+lastMD.slice(0,12000);
+ var errs=[];
+ if(AI_KEYS.openrouter){try{out.textContent='🤖 '+await oai('https://openrouter.ai/api/v1/chat/completions',AI_KEYS.openrouter,'meta-llama/llama-3.1-8b-instruct:free',p)+'\n\n— ответил OpenRouter';return}catch(e){errs.push('OpenRouter: '+e.message)}}
+ if(AI_KEYS.groq){try{out.textContent='🤖 '+await oai('https://api.groq.com/openai/v1/chat/completions',AI_KEYS.groq,'llama-3.1-8b-instant',p)+'\n\n— ответил Groq';return}catch(e){errs.push('Groq: '+e.message)}}
+ if(AI_KEYS.gemini){try{out.textContent='🤖 '+await gem(p)+'\n\n— ответил Gemini';return}catch(e){errs.push('Gemini: '+e.message)}}
+ out.textContent='ИИ не ответил. '+(errs.length?('Ошибки: '+errs.join(' | ')):'Нет ключей.');
+}
+async function gem(p){
+ var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+AI_KEYS.gemini,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:p}]}]})});
+ if(!r.ok)throw new Error('HTTP '+r.status);
+ var d=await r.json();
+ return (d.candidates&&d.candidates[0]&&d.candidates[0].content.parts.map(function(x){return x.text}).join(''))||'Пустой ответ';
+}
+async function oai(url,key,model,p){
+ var r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:model,messages:[{role:'user',content:p}]})});
+ if(!r.ok)throw new Error('HTTP '+r.status);
+ var d=await r.json();return d.choices[0].message.content;
+}
 </script>
 </body>
 </html>
