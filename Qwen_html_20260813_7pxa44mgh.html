@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Организационная Конституция — полный генератор v1.0</title>
+<title>Организационная Конституция — генератор v2.0</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f2f4f3;color:#1c2422}
 .topbar{background:#0d3b2e;color:#fff;padding:12px 24px;display:flex;gap:12px;align-items:baseline}
@@ -21,6 +21,7 @@ textarea{min-height:56px}
 .rank-opts label{margin:0 3px;font-weight:400}
 .btn{background:#0e6b4f;color:#fff;border:none;border-radius:10px;padding:13px 24px;font-size:16px;font-weight:700;cursor:pointer}
 .btn.small{padding:9px 14px;font-size:14px}
+.btn.ghost{background:#8a9591}
 .error{color:#b3261e;font-weight:600;margin-top:10px;white-space:pre-line}
 #resultSection{max-width:880px;margin:0 auto 60px;background:#fff;border-radius:14px;padding:28px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
 #resultHtml h1{font-size:21px}#resultHtml h2{color:#0e6b4f;margin-top:24px;font-size:17px}#resultHtml h3{margin-top:14px;font-size:15px}
@@ -32,10 +33,10 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 </style>
 </head>
 <body>
-<div class="topbar no-print">⚖ Организационная Конституция <span>полный генератор v1.0 · Модули 1–4 + Матрицы профессий</span></div>
+<div class="topbar no-print">⚖ Организационная Конституция <span>генератор v2.0 · Модули 1–4 + Матрицы профессий + IOC</span></div>
 <section class="hero no-print">
 <h1>У вашей компании есть устав, миссия, оргструктура, регламенты и KPI.<br>Но есть ли между ними Конституция?</h1>
-<p>Ответьте на вопросы о реальной практике — система соберёт <b>полную Конституцию</b>: Преамбулу, Части I–XI, функциональные конституции по Матрице профессий, приложения и отчёт о разрывах.</p>
+<p>Ответьте на вопросы о реальной практике — система соберёт <b>полную Конституцию</b> (Преамбула, Части I–XI, функциональные конституции по Матрице профессий, приложения) и посчитает <b>Индекс управляемости (IOC)</b> с картой разрывов.</p>
 </section>
 
 <main class="quiz no-print">
@@ -44,7 +45,7 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 
 <h2 class="mod">МОДУЛЬ 1. ФУНДАМЕНТ</h2>
 <label class="q" for="q1">1. Какую одну главную проблему компания решает для клиента?</label>
-<div class="hint">Не «мы продаём X», а «мы решаем проблему Y для Z».</div>
+<div class="hint">Не «мы продаём X», а «мы решаем проблему Y для Z». Минимум 6 слов.</div>
 <input type="text" id="q1">
 <label class="q" for="q2">2. Если завтра компания исчезнет, кто конкретно и что потеряет?</label>
 <textarea id="q2"></textarea>
@@ -103,7 +104,7 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 
 <h2 class="mod">МОДУЛЬ 2. ВЛАСТЬ И УПРАВЛЕНИЕ</h2>
 <label class="q" for="m2owner">Конечный бенефициар (собственник)</label>
-<input type="text" id="m2owner">
+<input type="text" id="m2owner" placeholder="Имя или структура владения">
 <label class="q">Органы управления</label>
 <label class="opt"><input type="checkbox" name="m2b" value="Собственник"> Собственник</label>
 <label class="opt"><input type="checkbox" name="m2b" value="Совет директоров"> Совет директоров</label>
@@ -156,7 +157,8 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 <label class="opt"><input type="radio" name="m4o" value="a" checked> Один владелец + участники с частичной ответственностью</label>
 <label class="opt"><input type="radio" name="m4o" value="b"> Солидарная ответственность всех участников</label>
 
-<p style="margin-top:26px"><button type="button" class="btn" id="buildBtn">Собрать Конституцию →</button></p>
+<p style="margin-top:26px"><button type="button" class="btn" id="buildBtn">Собрать Конституцию →</button>
+<button type="button" class="btn ghost small" id="clearBtn">🧹 Очистить черновик</button></p>
 <div class="error" id="formError"></div>
 </main>
 
@@ -169,14 +171,18 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 </div>
 <div id="resultHtml"></div>
 </section>
-<footer>Прототип v1.0 · результат не является юридическим документом</footer>
+<footer>Прототип v2.0 · результат не является юридическим документом</footer>
 
 <script>
+/* ========= КОНТАКТ АРХИТЕКТОРА (уже вшит) ========= */
+var CONTACT={tg:'@ShukhratIlyasov',name:'Шухрат Ильясов'};
+
 var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function txt(id){var e=document.getElementById(id);return e?e.value.trim():''}
 function checks(n){return $$('input[name="'+n+'"]:checked').map(function(e){return e.value})}
 function radio(n){var e=document.querySelector('input[name="'+n+'"]:checked');return e?e.value:''}
+function norm(s){s=(s||'').trim();if(!s)return s;s=s.charAt(0).toUpperCase()+s.slice(1);if(!/[.!?…»]$/.test(s))s+='.';return s}
 
 /* ================= БИБЛИОТЕКА МАТРИЦ (LIB) ================= */
 var TMAP={И:'Иерархия',П:'Прямая передача',О:'Общий ресурс'};
@@ -281,7 +287,7 @@ var CROSS=[
 {af:'RISK',ar:'Риск-аналитик',bf:'FIN',br:'Финансовый директор (CFO)',o:'оценка рисков для финансовых решений',p:'CFO учитывает риск-оценку в решениях',arb:'CEO'}
 ];
 
-/* ================= ФОРМА: генерация блоков ================= */
+/* ================= ФОРМА ================= */
 var PRIO=[['safety','Безопасность (людей, клиентов, данных)'],['quality','Качество продукта / услуги'],['finance','Финансовая устойчивость'],['speed','Скорость и сроки'],['client','Удовлетворённость клиента'],['people','Интересы сотрудников'],['growth','Рост и масштабирование']];
 document.getElementById('q6box').innerHTML=PRIO.map(function(p){return '<div class="rank-row"><span>'+p[1]+'</span><span>'+[1,2,3,4,5,6,7].map(function(n){return '<label><input type="radio" name="q6_'+p[0]+'" value="'+n+'">'+n+'</label>'}).join('')+'</span></div>'}).join('');
 document.getElementById('fnBox').innerHTML=Object.keys(LIB).map(function(k){return '<label class="opt"><input type="checkbox" name="fn" value="'+k+'"> '+LIB[k].title+'</label>'}).join('');
@@ -291,12 +297,12 @@ $$('input[name="fn"]:checked').forEach(function(cb){var f=LIB[cb.value];
 box.insertAdjacentHTML('beforeend','<div class="card"><b>'+f.title+'</b>'+f.roles.map(function(r){return '<div class="rank-row"><span>'+r.n+(r.core?' *':'')+'</span><select data-fn="'+cb.value+'" data-role="'+r.id+'"><option value="on">есть</option><option value="merge">совмещена</option><option value="off">нет</option></select></div>'}).join('')+'</div>')})}
 function rn(f,id){var r=f.roles.find(function(x){return x.id===id});return r?r.n:id}
 function findRole(f,n){n=n.toLowerCase();return f.roles.find(function(r){return r.n.toLowerCase().indexOf(n)>-1})}
-
+function findRoleGlobal(n,m3){n=(n||'').toLowerCase();if(!n)return false;
+for(var i=0;i<m3.fns.length;i++){var f=LIB[m3.fns[i]];if(f.roles.some(function(r){return r.n.toLowerCase().indexOf(n)>-1}))return true}return false}
 function collectM3(){var fns=$$('input[name="fn"]:checked').map(function(e){return e.value});var roles={};
 fns.forEach(function(f){roles[f]={};$$('select[data-fn="'+f+'"]').forEach(function(s){roles[f][s.dataset.role]=s.value})});
 var merges=txt('merges').split(/\n+/).map(function(l){return l.split('+').map(function(s){return s.trim()})}).filter(function(p){return p.length===2});
 return{fns:fns,roles:roles,merges:merges,report:[]}}
-
 function adaptFunction(fk,m3){var f=LIB[fk],out={roles:[],links:[],gaps:[],conflicts:[]},active={};
 f.roles.forEach(function(r){var s=(m3.roles[fk]||{})[r.id]||(r.core?'on':'off');
 if(s==='on'||s==='merge'){active[r.id]=1;out.roles.push({n:r.n,ckp:r.ckp,kpi:r.kpi,st:s})}
@@ -313,9 +319,26 @@ var NORM7={a:'ситуация решается руководителем на 
 var NORM10={a:'ошибка влечёт увольнение / штраф независимо от обстоятельств',b:'ошибка при соблюдении процедур не наказывается: разбирается системная причина и корректируется процесс; ошибка из-за нарушения Красной линии = нарушение Конституции',c:'реакция определяется руководителем исполнителя',d:'ошибки формально не разбираются (разрыв)',e:'принцип не определён — подлежит фиксации'};
 var NORM11={a:'отступление допускается; каждое фиксируется и ведёт к пересмотру регламента',b:'отступление не допускается; клиенту предлагается решение в рамках регламента',c:'отступление допускается по зафиксированным критериям размера и суммы',d:'отступление только через процедуру исключения с фиксацией и пересмотром регламента',e:'процедура НЕ определена (критический разрыв): решается ситуативно'};
 
+/* ================= ЧЕРНОВИК (автосохранение) ================= */
+function akey(el){return el.id||el.name||(el.dataset.fn?('sel_'+el.dataset.fn+'_'+el.dataset.role):'')}
+function collectAnswers(){var out={};$$('input,textarea,select').forEach(function(el){var k=akey(el);if(!k)return;
+if(el.type==='checkbox'){out[k]=out[k]||[];if(el.checked)out[k].push(el.value)}
+else if(el.type==='radio'){if(el.checked)out[k]=el.value}
+else out[k]=el.value});return out}
+function saveDraft(){try{localStorage.setItem('oc_v2',JSON.stringify(collectAnswers()))}catch(e){}}
+var dT;document.addEventListener('input',function(){clearTimeout(dT);dT=setTimeout(saveDraft,400)});
+function loadDraft(){var d;try{d=JSON.parse(localStorage.getItem('oc_v2')||'null')}catch(e){d=null}if(!d)return;
+$$('input,textarea,select').forEach(function(el){var k=akey(el);if(!k||!(k in d))return;var v=d[k];
+if(el.type==='checkbox'){el.checked=v.indexOf(el.value)>-1}
+else if(el.type==='radio'){el.checked=(v===el.value)}
+else el.value=v});
+renderRoles();
+$$('select[data-fn]').forEach(function(s){var k='sel_'+s.dataset.fn+'_'+s.dataset.role;if(k in d)s.value=d[k]});}
+document.getElementById('clearBtn').addEventListener('click',function(){localStorage.removeItem('oc_v2');location.reload()});
+
+/* ================= СБОРКА ================= */
 var lastMD='';
 document.getElementById('buildBtn').addEventListener('click',build);
-
 function build(){
 var miss=[];
 if(!txt('q1'))miss.push('М1.1');if(!txt('q2'))miss.push('М1.2');if(!txt('q3a')||!txt('q3b')||!txt('q3c'))miss.push('М1.3');
@@ -331,7 +354,6 @@ var values=txt('q4').split(/\n+/).map(function(s){return s.trim()}).filter(Boole
 var ranks=PRIO.map(function(p){var v=radio('q6_'+p[0]);return{l:p[1],r:v?+v:99}});
 var seen={},dups=false;ranks.forEach(function(x){if(x.r<99){if(seen[x.r])dups=true;seen[x.r]=1}});
 ranks.sort(function(a,b){return a.r-b.r});
-
 var m3=collectM3(),size=radio('size')||'не указан';
 var bodies=checks('m2b'),triggers=checks('m2e'),vetos=checks('m2v');
 var drs=$$('select[name="dr"]').map(function(s){return s.dataset.k+': '+s.value});
@@ -340,27 +362,42 @@ var procs=txt('m4procs').split(/\n+/).map(function(l){var p=l.split('|').map(fun
 var gaps=[];
 if(radio('q7')==='f')gaps.push(['🔴','Не определено правило для нестандартных ситуаций (М1.7)']);
 if(radio('q11')==='e')gaps.push(['🔴','Нет процедуры исключений «клиент vs регламент» (М1.11)']);
-if(!txt('q4b'))gaps.push(['🟡','Ценности не подтверждены примером (М1.4б)']);
-if(ranks[0].l.indexOf('Безопасность')!==0&&ranks[0].r!==99)gaps.push(['🟡','Безопасность не высший приоритет (М1.6)']);
-if(dups)gaps.push(['🟡','В М1.6 ранг использован дважды']);
+if(!txt('q4b'))gaps.push(['🟡','М1.4: ценности не подтверждены примером из практики']);
+if(ranks[0].l.indexOf('Безопасность')!==0&&ranks[0].r!==99)gaps.push(['🟡','М1.6: безопасность не высший приоритет']);
+if(dups)gaps.push(['🟡','М1.6: один ранг использован дважды — порядок задан условно']);
 if(radio('m2d')==='e')gaps.push(['🔴','Нет правила по умолчанию на вершине эскалации (М2)']);
-if(radio('m4o')==='b')gaps.push(['🟡','Солидарная ответственность размывает фокус: рекомендуется «один владелец» (М4)']);
+if(radio('m4o')==='b')gaps.push(['🟡','М4: солидарная ответственность размывает фокус — рекомендуется «один владелец»']);
 procs.forEach(function(p){if(!p.o)gaps.push(['🔴','Процесс «'+p.n+'» без владельца (нарушен принцип одного владельца)'])});
+/* --- quality-gate и кросс-проверки v2.0 --- */
+var en={};m3.fns.forEach(function(f){en[f]=1});
+if(txt('q1').split(/\s+/).length<6)gaps.push(['🟡','М1.1: предназначение слишком абстрактно — статья будет декларативной']);
+if(txt('q2').split(/\s+/).length<6)gaps.push(['🟡','М1.2: миссия не конкретизирована (кто и что теряет)']);
+if(values.length<3)gaps.push(['🟡','М1.4: ценностей меньше 3 — каркас недостаточен']);
+values.forEach(function(v){if(/деньг|прибыл|заработ|сумм|выгод/i.test(v))gaps.push(['🔴','М1.4: «'+v+'» — выгода, а не принцип: противоречит концепции ценностей и создаёт лазейку в Красных линиях (подарки, конфликт интересов)'])});
+if(/^(собственник|владелец|я|мы|директор|учредитель)$/i.test(txt('m2owner')))gaps.push(['🟡','М2: бенефициар указан родовым словом — зафиксируйте имя/структуру (ст. 6, преемственность Части X)']);
+if(radio('q10')==='a')gaps.push(['🟠','М1.10: «увольнение/штраф» подавляет сообщение об ошибках и растит риск сокрытия; рассмотрите разбор системной причины']);
+if(radio('q11')==='c')gaps.push(['🟡','М1.11: критерии «размер/сумма» не зафиксированы — правило станет ситуативным (ст. 5.5)']);
+procs.forEach(function(p){if(!p.s)gaps.push(['🟡','М4: процесс «'+p.n+'» без SLA — владелец неизмерим (ст. 16)']);
+if(p.o&&!findRoleGlobal(p.o,m3))gaps.push(['🟡','М4: владелец «'+p.o+'» не найден в матрице ролей — уточните роль или включите функцию'])});
+CROSS.forEach(function(c){if(en[c.af]&&!en[c.bf])gaps.push([(c.af==='SALES'&&(c.bf==='RISK'||c.bf==='FIN'))?'🔴':'','Точка соединения '+LIB[c.af].title+'→'+LIB[c.bf].title+' («'+c.o+'») неактивна: функция '+LIB[c.bf].title+' не включена — замок/интерфейс не институционализирован'])});
 
 var B=[];
 B.push(['h1','КОНСТИТУЦИЯ ОРГАНИЗАЦИИ — '+name]);
-B.push(['p','Версия: '+ver+' · Дата: '+date+' · Статус: проект · Собрано генератором v1.0']);
+B.push(['p','Версия: '+ver+' · Дата: '+date+' · Статус: проект · Собрано генератором v2.0']);
 B.push(['h2','ПРЕАМБУЛА']);
 B.push(['p',q12==='b'?'Конституция обновляет и заменяет аналогичный документ.':q12==='c'?'Конституция создаётся в антикризисном режиме.':'Конституция создаётся впервые и является первым единым документом организации.']);
 B.push(['p','До принятия принципы '+(q8.length?('фиксировались: '+q8.join('; ').toLowerCase()+'.'):'не были формально зафиксированы.')+' Область применения: '+(q9.length?q9.join('; ').toLowerCase():'штатные сотрудники')+'.']);
 B.push(['p','Конституция имеет верховенство: ни один регламент, ДИ или локальная матрица не могут ей противоречить.']);
 B.push(['h2','ЧАСТЬ I. ОСНОВЫ ОРГАНИЗАЦИИ'],['p','Статус раздела: из ваших ответов']);
-B.push(['h3','Статья 1. Предназначение']);B.push(['p',name+' существует для того, чтобы '+txt('q1')]);
-B.push(['h3','Статья 2. Миссия']);B.push(['p','Миссия: '+txt('q2')]);
-B.push(['h3','Статья 3. Видение']);B.push(['p','К '+year+' году: '+txt('q3a')+' Бенефициар: '+txt('q3b')+' Отличие: '+txt('q3c')]);
+B.push(['h3','Статья 1. Предназначение']);
+B.push(['p','Предназначение (формулировка собственника): «'+norm(txt('q1'))+'» Нормативное следствие: все решения, процессы и роли организации подчинены реализации этого предназначения.']);
+B.push(['h3','Статья 2. Миссия']);
+B.push(['p','Миссия (формулировка собственника): «'+norm(txt('q2'))+'» Компания несёт ответственность за непрерывность этого результата.']);
+B.push(['h3','Статья 3. Видение']);
+B.push(['p','Видение к '+year+' году (формулировка собственника): «'+norm(txt('q3a'))+'» Бенефициар: «'+norm(txt('q3b'))+'» Отличие: «'+norm(txt('q3c'))+'»']);
 B.push(['h3','Статья 4. Ценности']);
 values.forEach(function(v,i){B.push(['p',(i+1)+'. '+v])});
-B.push(['p',txt('q4b')?'Пример применения: '+txt('q4b'):'⚠ Пример не приведён — ценность рискует остаться декларацией.']);
+B.push(['p',txt('q4b')?'Пример применения из практики: '+norm(txt('q4b')):'⚠ Пример не приведён — ценность рискует остаться декларацией.']);
 B.push(['h3','Статья 5. Принципы и Красные линии']);
 checks('q5').forEach(function(r){B.push(['li','Запрещено: '+r.toLowerCase()])});
 B.push(['p','Нарушение Красной линии — безусловное основание прекращения полномочий независимо от должности.']);
@@ -373,7 +410,7 @@ B.push(['h2','ЧАСТЬ II. ВЛАСТЬ И УПРАВЛЕНИЕ'],['p','Ста
 B.push(['h3','Статья 6. Органы управления']);
 B.push(['p','Бенефициар: '+(txt('m2owner')||'не указан')+'. Органы: '+(bodies.length?bodies.join('; '):'не указаны')+'.']);
 B.push(['h3','Статья 7. Полномочия']);
-B.push(['p','CEO единолично: финансовые решения до '+(txt('m2limit')||'не задано')+'. Неделегировable: изменение Конституции, миссии, назначение CEO, Красные линии, ликвидация.']);
+B.push(['p','CEO единолично: финансовые решения до '+(txt('m2limit')||'не задано')+'. Неделегированные полномочия: изменение Конституции, миссии, назначение CEO, Красные линии, ликвидация.']);
 B.push(['h3','Статья 8. Decision Rights']);
 drs.forEach(function(d){B.push(['li',d])});
 B.push(['h3','Статья 9. Делегирование']);
@@ -406,7 +443,6 @@ B.push(['p','Ответственность закрепляется за рол
 B.push(['p','Конфликт KPI разрешается арбитром (Часть VII / CEO) в срок до '+(txt('m2days')||3)+' дн. по приоритетам ст. 5.2.']);
 B.push(['p','Контроль: конституционная ретроспектива ежеквартально, аудит целостности ежегодно (Часть XI). KPI-карты — Приложение 2.']);
 
-/* ЧАСТЬ VI + ПРИЛОЖЕНИЯ из матриц */
 B.push(['h2','ЧАСТЬ VI. ФУНКЦИОНАЛЬНЫЕ КОНСТИТУЦИИ'],['p','Статус раздела: адаптированный эталон (Матрица профессий)']);
 var allKpi=[];
 m3.fns.forEach(function(fk){var f=LIB[fk],a=adaptFunction(fk,m3);
@@ -419,7 +455,6 @@ a.gaps.forEach(function(g){B.push(['li','🟡 '+g]);m3.report.push(['🟡',f.tit
 a.conflicts.forEach(function(c){B.push(['li','🔴 '+c]);m3.report.push(['🔴',f.title+': '+c])})});
 
 B.push(['h2','ЧАСТЬ VII. МЕЖФУНКЦИОНАЛЬНОЕ ВЗАИМОДЕЙСТВИЕ'],['p','Статус раздела: адаптированный эталон (точки соединения)']);
-var en={};m3.fns.forEach(function(f){en[f]=1});
 CROSS.forEach(function(c){if(en[c.af]&&en[c.bf])B.push(['li',LIB[c.af].title+' ('+c.ar+') → '+LIB[c.bf].title+' ('+c.br+'). Объект: '+c.o+'. Протокол: '+c.p+'. Арбитр: '+c.arb+'.'])});
 B.push(['p','Если арбитр не решил — эскалация CEO (ст. 10). Стратегические конфликты — Совету.']);
 
@@ -448,12 +483,18 @@ allKpi.forEach(function(k){B.push(['li',k])});
 B.push(['h2','ЖУРНАЛ ИЗМЕНЕНИЙ']);
 B.push(['li','v1.0 | '+date+' | Конституция создана на основе опросника (Модули 1–4) | владелец: '+(txt('m2owner')||name)]);
 
-B.push(['h2','ОТЧЁТ О ВАЛИДАЦИИ']);
 gaps=gaps.concat(m3.report);
+var red=0,org=0,yel=0;gaps.forEach(function(g){if(g[0]==='🔴')red++;else if(g[0]==='🟠')org++;else if(g[0]==='🟡')yel++});
+var ioc=Math.max(5,100-red*15-org*7-yel*3);
+B.push(['h2','ИНДЕКС ОРГАНИЗАЦИОННОЙ КОНСТИТУЦИИ (IOC)']);
+B.push(['p','IOC: '+ioc+' / 100 · 🔴 '+red+' · 🟠 '+org+' · 🟡 '+yel+' · Уровень: '+(ioc<40?'Фрагментарная система':ioc<60?'Формирующаяся система':ioc<76?'Согласованная':'Конституционная')]);
+B.push(['h2','ОТЧЁТ О ВАЛИДАЦИИ']);
 gaps.forEach(function(g){B.push(['li',g[0]+' '+g[1]])});
 if(!gaps.length)B.push(['li','✅ Критических разрывов не выявлено']);
 B.push(['h2','РЕКОМЕНДУЕМОЕ ВМЕШАТЕЛЬСТВО']);
 B.push(['p','Приоритеты: 1) закрыть 🔴 разрывы; 2) утвердить дефолтные разделы VIII–XI; 3) подтвердить совмещения и KPI-карты; 4) перенести точки соединения в CRM/ERP (цифровой двойник).']);
+B.push(['h2','СЛЕДУЮЩИЙ ШАГ']);
+B.push(['p','Скачайте файл (кнопка «⬇ Скачать .md») — это ваш диагноз. С ним можно работать самостоятельно или привлечь архитектора системы: '+CONTACT.name+' ('+CONTACT.tg+'). Приложите файл к сообщению — это ускорит разбор.']);
 
 lastMD=B.map(function(b){if(b[0]==='h1')return '# '+b[1];if(b[0]==='h2')return '\n## '+b[1];if(b[0]==='h3')return '\n### '+b[1];if(b[0]==='li')return '- '+b[1];return b[1]}).join('\n');
 document.getElementById('resultHtml').innerHTML=B.map(function(b){if(b[0]==='h1')return '<h1>'+esc(b[1])+'</h1>';if(b[0]==='h2')return '<h2>'+esc(b[1])+'</h2>';if(b[0]==='h3')return '<h3>'+esc(b[1])+'</h3>';if(b[0]==='li')return '<div>• '+esc(b[1])+'</div>';return '<p>'+esc(b[1])+'</p>'}).join('');
@@ -462,8 +503,9 @@ var rs=document.getElementById('resultSection');rs.hidden=false;rs.scrollIntoVie
 
 document.getElementById('copyBtn').addEventListener('click',function(){var b=this;function ok(){b.textContent='✅ Скопировано';setTimeout(function(){b.textContent='📋 Копировать текст'},1500)}
 if(navigator.clipboard){navigator.clipboard.writeText(lastMD).then(ok)}else{var ta=document.createElement('textarea');ta.value=lastMD;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();ok()}});
-document.getElementById('downloadBtn').addEventListener('click',function(){var blob=new Blob([lastMD],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Konstitutsiya_v1.md';a.click();URL.revokeObjectURL(a.href)});
+document.getElementById('downloadBtn').addEventListener('click',function(){var blob=new Blob([lastMD],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Konstitutsiya_v2.md';a.click();URL.revokeObjectURL(a.href)});
 document.getElementById('printBtn').addEventListener('click',function(){window.print()});
+loadDraft();
 </script>
 </body>
 </html>
