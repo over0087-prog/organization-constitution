@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Организационная Конституция — генератор v2.1</title>
+<title>Организационная Конституция — генератор v3.0</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f2f4f3;color:#1c2422}
 .topbar{background:#0d3b2e;color:#fff;padding:12px 24px;display:flex;gap:12px;align-items:baseline}
@@ -33,10 +33,10 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 </style>
 </head>
 <body>
-<div class="topbar no-print">⚖ Организационная Конституция <span>генератор v2.1 · Модули 1–4 + Матрицы профессий + IOC + ИИ-разбор</span></div>
+<div class="topbar no-print">⚖ Организационная Конституция <span>генератор v3.0 · Матрицы + Оргструктура + IOC + ИИ с базой знаний</span></div>
 <section class="hero no-print">
 <h1>У вашей компании есть устав, миссия, оргструктура, регламенты и KPI.<br>Но есть ли между ними Конституция?</h1>
-<p>Ответьте на вопросы о реальной практике — система соберёт <b>полную Конституцию</b> (Преамбула, Части I–XI, функциональные конституции по Матрице профессий, приложения), посчитает <b>Индекс управляемости (IOC)</b> с картой разрывов, а ИИ-консультант объяснит диагноз простым языком.</p>
+<p>Ответьте на вопросы о реальной практике — система соберёт <b>полную Конституцию</b> (Преамбула, Части I–XI, оргструктуру, функциональные конституции по Матрице профессий, приложения), посчитает <b>Индекс управляемости (IOC)</b> с картой разрывов, а ИИ-консультант, обученный методологии, объяснит диагноз простым языком.</p>
 </section>
 
 <main class="quiz no-print">
@@ -57,7 +57,7 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 <textarea id="q4b"></textarea>
 <label class="q">5. Красные линии: что ЗАПРЕЩЕНО любому сотруднику?</label>
 <label class="opt"><input type="checkbox" name="q5" value="Передавать конфиденциальные данные клиентов третьим лицам"> Передавать конфиденциальные данные клиентов</label>
-<label class="opt"><input type="checkbox" name="q5" value="Принимать подарки и выплаты от поставщиков"> Принимать подарки от поставщиков</label>
+<label class="opt"><input type="checkbox" name="q5" value="Принимать подарки и выплаты от поставщиков"> Принимать подарки и выплаты от поставщиков</label>
 <label class="opt"><input type="checkbox" name="q5" value="Фальсифицировать отчётные данные"> Фальсифицировать отчётные данные</label>
 <label class="opt"><input type="checkbox" name="q5" value="Принимать решения, создающие угрозу жизни и здоровью"> Решения с угрозой жизни и здоровью</label>
 <label class="opt"><input type="checkbox" name="q5" value="Вступать в сговор с конкурентами"> Сговор с конкурентами</label>
@@ -171,8 +171,9 @@ footer{max-width:960px;margin:0 auto 40px;color:#7a8481;font-size:13px;padding:0
 </div>
 <div id="resultHtml"></div>
 </section>
-<footer>Прототип v2.1 · результат не является юридическим документом</footer>
+<footer>Прототип v3.0 · результат не является юридическим документом</footer>
 
+<script src="js/data.js"></script>
 <script>
 /* ========= КОНТАКТ АРХИТЕКТОРА (вшит) ========= */
 var CONTACT={tg:'@ShukhratIlyasov',name:'Шухрат Ильясов'};
@@ -184,7 +185,7 @@ function checks(n){return $$('input[name="'+n+'"]:checked').map(function(e){retu
 function radio(n){var e=document.querySelector('input[name="'+n+'"]:checked');return e?e.value:''}
 function norm(s){s=(s||'').trim();if(!s)return s;s=s.charAt(0).toUpperCase()+s.slice(1);if(!/[.!?…»]$/.test(s))s+='.';return s}
 
-/* ================= БИБЛИОТЕКА МАТРИЦ (LIB) ================= */
+/* ================= БИБЛИОТЕКА МАТРИЦ (демо-эталон; заменяется js/data.js) ================= */
 var TMAP={И:'Иерархия',П:'Прямая передача',О:'Общий ресурс'};
 var LIB={
 FIN:{title:'Финансы',redlines:['Внутренний аудитор независим от ролей, исполняющих бюджет'],roles:[
@@ -286,6 +287,9 @@ var CROSS=[
 {af:'IT',ar:'CIO / Директор по IT',bf:'SALES',br:'CCO',o:'CRM как единственный источник правды о клиенте',p:'Данные о клиенте вне CRM не хранятся',arb:'CEO'},
 {af:'RISK',ar:'Риск-аналитик',bf:'FIN',br:'Финансовый директор (CFO)',o:'оценка рисков для финансовых решений',p:'CFO учитывает риск-оценку в решениях',arb:'CEO'}
 ];
+/* Если Qwen Coder собрал полные матрицы в js/data.js — они заменяют демо-эталон */
+if(window.LIB_FULL){LIB=LIB_FULL;}
+if(window.CROSS_FULL){CROSS=CROSS_FULL;}
 
 /* ================= ФОРМА ================= */
 var PRIO=[['safety','Безопасность (людей, клиентов, данных)'],['quality','Качество продукта / услуги'],['finance','Финансовая устойчивость'],['speed','Скорость и сроки'],['client','Удовлетворённость клиента'],['people','Интересы сотрудников'],['growth','Рост и масштабирование']];
@@ -314,6 +318,32 @@ m3.merges.forEach(function(p){var A=findRole(f,p[0]),B2=findRole(f,p[1]);
 if(A&&B2){var l=f.links.find(function(x){return(x.a===A.id&&x.b===B2.id)||(x.a===B2.id&&x.b===A.id)});
 if(l&&l.mc)out.conflicts.push('совмещение «'+A.n+' + '+B2.n+'» = конфликт интересов: '+l.i)}});
 return out}
+
+/* ===== ОРГСТРУКТУРА ИЗ МАТРИЦ ===== */
+function orgBlocks(m3,bodies){
+ var B=[];
+ var topLabel=(bodies.indexOf('CEO / Генеральный директор')>-1)?'CEO / Генеральный директор':(bodies.length?bodies[0]:'Собственник');
+ B.push(['h3','Статья 11. Организационная структура']);
+ B.push(['p','Вершина управленческой иерархии: '+topLabel+'. Структура ниже построена автоматически из Матрицы профессий (связи подчинения «Иерархия»). Горизонтальные связи («Прямая передача», «Общий ресурс») не создают подчинения — они описаны в картах связей (Часть VI).']);
+ m3.fns.forEach(function(fk){
+  var f=LIB[fk];
+  var hier=f.links.filter(function(l){return l.t==='И'});
+  var kids={},hasBoss={};
+  hier.forEach(function(l){(kids[l.a]=kids[l.a]||[]).push(l.b);hasBoss[l.b]=1});
+  var act=f.roles.filter(function(r){return ((m3.roles[fk]||{})[r.id]||'on')!=='off'});
+  var roots=act.filter(function(r){return !hasBoss[r.id]});
+  B.push(['p','— '+f.title+' (руководитель функции: '+(roots.length?roots.map(function(r){return r.n}).join(', '):'—')+')']);
+  function walk(id,d){
+   var r=f.roles.find(function(x){return x.id===id});if(!r)return;
+   var st=(m3.roles[fk]||{})[id]||'on';if(st==='off')return;
+   var pad='';for(var i=0;i<d;i++)pad+='\u00A0\u00A0\u00A0 ';
+   B.push(['li',pad+'└ '+r.n+(st==='merge'?' (совмещена)':'')]);
+   (kids[id]||[]).forEach(function(k){walk(k,d+1)});
+  }
+  roots.forEach(function(r){walk(r.id,1)});
+ });
+ return B;
+}
 
 var NORM7={a:'ситуация решается руководителем на уровень выше участников',b:'ситуация решается сотрудником, первым выявившим её, с фиксацией решения',c:'ситуация решается коллегиально на внеочередном совещании',d:'ситуация эскалируется собственнику / CEO',e:'декларируется полное покрытие регламентами; остаточные ситуации — владельцу Конституции',f:'правило НЕ определено (критический разрыв); до фиксации действует приоритет ст. 5.2 с записью в журнал'};
 var NORM10={a:'ошибка влечёт увольнение / штраф независимо от обстоятельств',b:'ошибка при соблюдении процедур не наказывается: разбирается системная причина и корректируется процесс; ошибка из-за нарушения Красной линии = нарушение Конституции',c:'реакция определяется руководителем исполнителя',d:'ошибки формально не разбираются (разрыв)',e:'принцип не определён — подлежит фиксации'};
@@ -378,11 +408,11 @@ if(radio('q10')==='a')gaps.push(['🟠','М1.10: «увольнение/штра
 if(radio('q11')==='c')gaps.push(['🟡','М1.11: критерии «размер/сумма» не зафиксированы — правило станет ситуативным (ст. 5.5)']);
 procs.forEach(function(p){if(!p.s)gaps.push(['🟡','М4: процесс «'+p.n+'» без SLA — владелец неизмерим (ст. 16)']);
 if(p.o&&!findRoleGlobal(p.o,m3))gaps.push(['🟡','М4: владелец «'+p.o+'» не найден в матрице ролей — уточните роль или включите функцию'])});
-CROSS.forEach(function(c){if(en[c.af]&&!en[c.bf])gaps.push([(c.af==='SALES'&&(c.bf==='RISK'||c.bf==='FIN'))?'🔴':'','Точка соединения '+LIB[c.af].title+'→'+LIB[c.bf].title+' («'+c.o+'») неактивна: функция '+LIB[c.bf].title+' не включена — замок/интерфейс не институционализирован'])});
+CROSS.forEach(function(c){if(en[c.af]&&!en[c.bf])gaps.push([(c.af==='SALES'&&(c.bf==='RISK'||c.bf==='FIN'))?'🔴':'🟠','Точка соединения '+LIB[c.af].title+'→'+LIB[c.bf].title+' («'+c.o+'») неактивна: функция '+LIB[c.bf].title+' не включена — замок/интерфейс не институционализирован'])});
 
 var B=[];
 B.push(['h1','КОНСТИТУЦИЯ ОРГАНИЗАЦИИ — '+name]);
-B.push(['p','Версия: '+ver+' · Дата: '+date+' · Статус: проект · Собрано генератором v2.1']);
+B.push(['p','Версия: '+ver+' · Дата: '+date+' · Статус: проект · Собрано генератором v3.0']);
 B.push(['h2','ПРЕАМБУЛА']);
 B.push(['p',q12==='b'?'Конституция обновляет и заменяет аналогичный документ.':q12==='c'?'Конституция создаётся в антикризисном режиме.':'Конституция создаётся впервые и является первым единым документом организации.']);
 B.push(['p','До принятия принципы '+(q8.length?('фиксировались: '+q8.join('; ').toLowerCase()+'.'):'не были формально зафиксированы.')+' Область применения: '+(q9.length?q9.join('; ').toLowerCase():'штатные сотрудники')+'.']);
@@ -425,6 +455,7 @@ B.push(['p','Масштаб: '+size+' человек. Функции: '+(m3.fns.
 B.push(['p','Роль ≠ должность: роль — набор полномочий, ответственности, KPI и связей, не привязанный к человеку; при увольнении роль сохраняется.']);
 if(size==='<50')B.push(['p','Калибровка: при <50 допустимы эталонные совмещения, кроме конфликтных пар.']);
 if(size==='500+')B.push(['p','Калибровка: при 500+ конфликтные роли должны быть разделены.']);
+B=B.concat(orgBlocks(m3,bodies));
 
 B.push(['h2','ЧАСТЬ IV. БИЗНЕС-ПРОЦЕССЫ'],['p','Статус раздела: из ваших ответов']);
 B.push(['h3','Статья 15. Потоки']);
@@ -502,14 +533,15 @@ var rs=document.getElementById('resultSection');rs.hidden=false;rs.scrollIntoVie
 
 document.getElementById('copyBtn').addEventListener('click',function(){var b=this;function ok(){b.textContent='✅ Скопировано';setTimeout(function(){b.textContent='📋 Копировать текст'},1500)}
 if(navigator.clipboard){navigator.clipboard.writeText(lastMD).then(ok)}else{var ta=document.createElement('textarea');ta.value=lastMD;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();ok()}});
-document.getElementById('downloadBtn').addEventListener('click',function(){var blob=new Blob([lastMD],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Konstitutsiya_v2.md';a.click();URL.revokeObjectURL(a.href)});
+document.getElementById('downloadBtn').addEventListener('click',function(){var blob=new Blob([lastMD],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Konstitutsiya_v3.md';a.click();URL.revokeObjectURL(a.href)});
 document.getElementById('printBtn').addEventListener('click',function(){window.print()});
 loadDraft();
 </script>
 
 <script>
-/* ================= ИИ-РОУТЕР (Groq + OpenRouter, ключи вшиты) ================= */
+/* ================= ИИ-РОУТЕР + БАЗА ЗНАНИЙ ================= */
 var AI_KEYS={gemini:'',groq:'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',openrouter:'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'};
+var KB='Ты — консультант по методологии «Организационная Конституция». Анализируй отчёт диагностики СТРОГО в рамках этой методологии.\n\nСУТЬ МЕТОДОЛОГИИ:\n— Компания управляется правилами, ролями, полномочиями и процессами. Конституция — единая архитектура, связывающая миссию, власть, роли, процессы, KPI и правила изменения. Без неё у компании не система, а библиотека разрозненных документов.\n— Роль ≠ должность: роль — набор полномочий, ответственности, KPI и связей; должность — человек-носитель.\n— Принцип «один владелец»: у каждого сквозного процесса ровно один владелец конечного результата; «ответственны все» = не отвечает никто.\n— Связи ролей: [Иерархия] — подчинение; [Прямая передача] — передача объекта с критериями качества и правом возврата; [Общий ресурс] — совместный объект/данные.\n— «4 замка» обещания клиенту: коммерческий, финансовый, риск, исполнение. Обещание без замков = риск убытков и срывов.\n— Красные линии — абсолютные запреты; нарушение = безусловное прекращение полномочий.\n— IOC 0–100: <40 фрагментарная система, 40–60 формирующаяся, 60–76 согласованная, >76 конституционная. 🔴 — критический разрыв (нет владельца, замок не институционализирован, нет правила), 🟠 — существенный, 🟡 — зона развития.\n— Ценность — принцип, а не выгода: формулировки про деньги/прибыль как ценность = анти-ценность и лазейка в красных линиях.\n— Ошибка без нарушения красной линии = материал для корректировки процесса; культура штрафов ведёт к сокрытию проблем.\n\nКАК РАЗБИРАТЬ ОТЧЁТ:\n1) Общая картина: уровень IOC и что это значит для собственника (2–3 предложения, язык денег и управляемости, без пересказа).\n2) Три самых опасных разрыва из отчёта: по каждому — что это означает на практике и к каким потерям (деньги, время, риски) приведёт через 6–12 месяцев.\n3) Три первых шага собственника: конкретные, выполнимые за 2–4 недели, в языке методологии (назначить владельца процесса, институционализировать замок, зафиксировать правило исключений, утвердить дефолтные разделы, разделить конфликтные совмещения).\nОтвечай на русском, конкретно, без воды и без пересказа содержания отчёта.';
 (function(){
  if(document.getElementById('aiBtn'))return;
  var act=document.querySelector('.actions');if(!act)return;
@@ -519,8 +551,8 @@ var AI_KEYS={gemini:'',groq:'gsk_s0hHqPDQbkPeglprl7H4WGdyb3FYJ1yEUMcdFuyDvXAMJxE
  b.addEventListener('click',runAI);
 })();
 async function runAI(){
- var out=document.getElementById('aiOut');out.style.display='block';out.textContent='ИИ читает отчёт…';
- var p='Ты — консультант по управлению компанией. Ниже отчёт диагностики «Организационная Конституция» (IOC, разрывы, роли, процессы). Ответь на русском, просто и конкретно: 1) Общая картина — 2–3 предложения. 2) Три самых опасных разрыва и к каким потерям они приведут. 3) Три первых шага собственника. ОТЧЁТ:\n'+lastMD.slice(0,12000);
+ var out=document.getElementById('aiOut');out.style.display='block';out.textContent='ИИ читает отчёт по методологии…';
+ var p=KB+'\n\nПроанализируй следующий отчёт по методологии выше.\nОТЧЁТ:\n'+lastMD.slice(0,12000);
  var errs=[];
  if(AI_KEYS.openrouter){try{out.textContent='🤖 '+await oai('https://openrouter.ai/api/v1/chat/completions',AI_KEYS.openrouter,'meta-llama/llama-3.1-8b-instruct:free',p)+'\n\n— ответил OpenRouter';return}catch(e){errs.push('OpenRouter: '+e.message)}}
  if(AI_KEYS.groq){try{out.textContent='🤖 '+await oai('https://api.groq.com/openai/v1/chat/completions',AI_KEYS.groq,'llama-3.1-8b-instant',p)+'\n\n— ответил Groq';return}catch(e){errs.push('Groq: '+e.message)}}
