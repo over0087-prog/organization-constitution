@@ -541,7 +541,7 @@ B.push(['div','<b>'+kc.kpi+'</b>']);
 B.push(['p','Роли: '+kc.roles.map(function(rid){var role=f.roles.find(function(r){return r.id===rid;});return role?role.n:rid;}).join(', ')]);
 if(kc.risk)B.push(['p','Риск: '+kc.risk]);
 if(kc.decompose)B.push(['p','Декомпозиция: '+kc.decompose]);
-}}});}});
+}}});
 
 B.push(['h2','ЖУРНАЛ ИЗМЕНЕНИЙ']);
 B.push(['li','v1.0 | '+date+' | Конституция создана на основе опросника (Модули 1–4) | владелец: '+(txt('m2owner')||name)]);

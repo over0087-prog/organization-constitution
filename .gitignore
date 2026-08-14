@@ -1,1 +1,23 @@
-(js/data.js, lib_full_preview.json, Qwen_html_20260813_7pxa44mgh.html)
+```
+# Web browser cache and temporary files
+*.html.*
+
+# Logs and temp files
+*.tmp
+*.log
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+*.env.*
+```
